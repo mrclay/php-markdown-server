@@ -18,7 +18,7 @@ cd php-markdown-server
 ./start-local.sh
 
 # to stop
-./start-local.sh
+./stop-local.sh
 ```
 
 ## Directory `/backend/public`
@@ -52,6 +52,8 @@ After that, a few replacements are made:
 
 ## Extension ideas
 
-As an example, I've added a snippet to replace `<p>{{OTHER_ANIMALS}}</p>` with the output of the
+Most of the logic is in `md-server/lib.php`.
+
+As an example, I've added a snippet to replace `<p>{{OTHER_ANIMALS}}</p>` in the output with the output of the
 script `files/example-replacement.php`.
 
