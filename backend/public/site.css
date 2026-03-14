@@ -1,0 +1,56 @@
+body {
+    background: #111;
+    color: #eee;
+    margin: 0;
+    padding: 1rem;
+}
+
+a:link,
+a:visited {
+    color: #59a2d4;
+}
+
+.contain {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem auto;
+    max-width: 1000px;
+    padding: 0 2rem;
+}
+
+.two-col {
+    display: flex;
+    min-height: 20rem;
+    gap: 1rem;
+
+    main {
+        flex: 3;
+    }
+    .sidebar {
+        flex: 1;
+    }
+}
+
+header,
+footer,
+main,
+.sidebar {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 2rem;
+
+    > :first-child {
+        margin-top: 0;
+    }
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+[data-uri="/"] nav a[href="/"],
+[data-uri="/about"] nav a[href="/about"],
+[data-uri="/foo/bar"] nav a[href="/foo/bar"] {
+    font-weight: bold;
+    text-decoration: none;
+}

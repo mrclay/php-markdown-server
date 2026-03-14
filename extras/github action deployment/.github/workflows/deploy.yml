@@ -1,0 +1,45 @@
+name: Deploy to Live
+
+on:
+  push:
+    branches:
+      - live
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: live
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4' # Match your server's PHP version
+          extensions: mbstring, xml, ctype, iconv, mysql
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        env:
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+        run: |
+          rsync -avzi --delete vendor/    $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/vendor
+          rsync -avzi --delete templates/ $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/templates
+          rsync -avzi --delete pages/     $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/pages
+          rsync -avzi --delete html/      $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/html

@@ -1,0 +1,27 @@
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|xml|txt|webp)$">
+# remove ETag
+FileETag None
+
+# Expires now + 30 days
+ExpiresActive on
+ExpiresDefault A25920000
+</FilesMatch>
+
+# Disable MultiViews to prevent Apache from guessing file extensions
+Options -MultiViews
+
+RewriteEngine on
+RewriteBase /
+
+# explicitly allow access for the .well-known directory
+RewriteRule "^.well-known/" - [L]
+
+# hide all dot files/dirs (.git)
+RewriteRule (^\.|/\.) - [F]
+
+# Route sitemap.xml to sitemap.xml.php
+RewriteRule ^sitemap\.xml$ /sitemap.xml.php [QSA,L]
+
+# Everything else that isn't a file gets routed through PHP
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /_router.php [QSA,L]

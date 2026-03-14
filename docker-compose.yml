@@ -1,0 +1,9 @@
+services:
+  backend:
+    build:
+      context: .
+    volumes:
+      - ./backend/md-server:/var/www/md-server
+      - ./backend/public:/var/www/public
+    ports:
+      - 3000:80
