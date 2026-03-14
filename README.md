@@ -8,7 +8,7 @@ A minimal PHP router that serves HTML by processing Markdown files.
 - You want to upload Markdown files to create new web pages
 - You don't want a build process or log-in system
 - You can build the templates with PHP
-- You want a system you can understand in 5 minutes, easily extended by you and an agent
+- You want a system you can understand in 5 minutes, easily extended by you or an agent
 
 ## Install
 
