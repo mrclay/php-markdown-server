@@ -5,7 +5,7 @@ use function MrClay\MarkdownServer\getMarkdownSitemapUrls;
 
 require_once dirname(__DIR__) . '/md-server/lib.php';
 
-$urls = getMarkdownSitemapUrls();
+$urls = getMarkdownSitemapUrls("https://{$_SERVER['SERVER_NAME']}");
 
 header('Content-Type: application/xml; charset=UTF-8');
 

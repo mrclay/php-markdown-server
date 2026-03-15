@@ -48,9 +48,9 @@ main,
     }
 }
 
-[data-uri="/"] nav a[href="/"],
-[data-uri="/about"] nav a[href="/about"],
-[data-uri="/foo/bar"] nav a[href="/foo/bar"] {
+[data-pathname="/"] nav a[href="/"],
+[data-pathname="/about"] nav a[href="/about"],
+[data-pathname="/foo/bar"] nav a[href="/foo/bar"] {
     font-weight: bold;
     text-decoration: none;
 }

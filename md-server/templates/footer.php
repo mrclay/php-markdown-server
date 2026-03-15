@@ -1,5 +1,4 @@
 <?php
-/** @var string $content */
-/** @var object $meta */
+namespace MrClay\MarkdownServer;
 ?>
 <p>Footer content. &copy; <?= date('Y') ?></p>

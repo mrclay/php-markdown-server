@@ -1,6 +1,6 @@
 ---
 title: "My example site"
-meta_description: An example site for you.
+description: An example site for you.
 is_home: true
 ---
 

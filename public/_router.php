@@ -16,4 +16,4 @@ if (!$mdFile) {
     exit;
 }
 
-serveMarkdownFile($mdFile, $requestUri);
+serveMarkdownFile($mdFile, $requestUri, __DIR__);

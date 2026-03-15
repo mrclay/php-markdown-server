@@ -7,6 +7,52 @@ use League\CommonMark\CommonMarkConverter;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+/**
+ * @property string $_request_pathname This is prepopulated with the request URL pathname
+ * @property string $_public_root_path This is prepopulated with the filesystem path to the public root.
+ * @property string|null $title The page title (plain text encoding).
+ * @property string|null $description The page's meta description (plain text encoding).
+ * @property string|null $sidebar Set to use a different sidebar template (e.g. "about" => sidebar-about.php).
+ * @property string|null $file If given a path (relative to md-server/files), the Markdown is ignored, and instead
+ *                             the file is included using PHP include() and the output is placed in the page.
+ * @property true|null $is_home Set to true for the home page
+ * @property true|null $increase_headings If true, the Markdown headings like ### will be increased by one level.
+ * @property string|null $body_class Adds CSS classname(s) to the body element.
+ * @property string|null $main_class Adds CSS classname(s) to the main element.
+ */
+#[\AllowDynamicProperties]
+class Meta
+{
+    public function __get($name)
+    {
+        return null;
+    }
+}
+
+/**
+ * Get HTML for main content.
+ */
+function content($newContent = null): string
+{
+    static $content;
+    if ($newContent !== null) {
+        $content = $newContent;
+    }
+    return $content;
+}
+
+/**
+ * Get page metadata.
+ */
+function meta(): Meta
+{
+    static $meta = null;
+    if ($meta === null) {
+        $meta = new Meta();
+    }
+    return $meta;
+}
+
 function findMatchingMarkdownFile($requestUri)
 {
     if (str_ends_with($requestUri, '/')) {
@@ -20,11 +66,15 @@ function findMatchingMarkdownFile($requestUri)
     return ($candidateFile && str_starts_with($candidateFile, $pagesDir)) ? $candidateFile : null;
 }
 
-function serveMarkdownFile($candidateFile, $requestUri)
+function serveMarkdownFile($candidateFile, $requestUri, $publicRootPath)
 {
     $object = YamlFrontMatter::parse(file_get_contents($candidateFile));
-    $meta = (object)$object->matter();
-    $meta->_request_uri = $requestUri;
+    $meta = meta();
+    foreach ($object->matter() as $key => $item) {
+        $meta->$key = $item;
+    }
+    $meta->_request_pathname = $requestUri;
+    $meta->_public_root_path = $publicRootPath;
 
     if (!empty($meta->file)) {
         // Just include a file.
@@ -36,7 +86,7 @@ function serveMarkdownFile($candidateFile, $requestUri)
         $md = $object->body();
         $lines = explode("\n", $md);
 
-        if ($meta->increase_headings ?? false) {
+        if ($meta->increase_headings === true) {
             $callback = function ($line) {
                 if (!preg_match('~^#+ ~', $line, $m)) {
                     return $line;
@@ -57,13 +107,14 @@ function serveMarkdownFile($candidateFile, $requestUri)
         $content = str_replace('<p>{{EXAMPLE_REPLACEMENT}}</p>', ob_get_clean(), $content);
     }
 
+    // Set content for templates
+    content($content);
+
     include __DIR__ . '/templates/page.php';
 }
 
-function getMarkdownSitemapUrls()
+function getMarkdownSitemapUrls(string $baseUrl): array
 {
-    $config = require __DIR__ . '/config.php';
-
     $pagesDir = __DIR__ . '/pages';
 
     // Recursively scan for all .md files
@@ -84,7 +135,8 @@ function getMarkdownSitemapUrls()
 
             // Handle index files - they map to their directory
             if (str_ends_with($urlPath, '/index')) {
-                $urlPath = substr($urlPath, 0, -6); // Remove /index
+                // "/foo/bar/index" => "/foo/bar/"
+                $urlPath = substr($urlPath, 0, -5);
             }
 
             // Ensure leading slash
@@ -92,9 +144,7 @@ function getMarkdownSitemapUrls()
                 $urlPath = '/' . $urlPath;
             }
 
-            $urlPath = rtrim($urlPath, '/');
-
-            $url = $config->BASE_URL . $urlPath;
+            $url = lib . phprtrim($baseUrl, '/') . $urlPath;
 
             // Try to get the last modified date from the file
             $lastmod = date('c', filemtime($file->getPathname()));
