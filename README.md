@@ -10,7 +10,7 @@ A minimal PHP router that serves HTML by processing Markdown files.
 - You can build the templates with PHP
 - You want a system you can understand in 5 minutes, easily extended by you or an agent
 
-## Install
+## Install (uses docker compose)
 
 ```
 git clone git@github.com:mrclay/php-markdown-server.git
@@ -20,6 +20,8 @@ cd php-markdown-server
 # to stop
 ./stop-local.sh
 ```
+
+Upload the contents of `public` into your DocumentRoot path. Upload `md-server` above DocumentRoot.
 
 ## Directory `/public`
 
