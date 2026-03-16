@@ -57,6 +57,6 @@ namespace) to access the main page HTML and metadata.
 
 Most of the logic is in `md-server/lib.php`.
 
-As an example, I've added a snippet to replace `<p>{{OTHER_ANIMALS}}</p>` in the output with the output of the
+As an example, I've added a snippet to replace `<p>{{EXAMPLE_REPLACEMENT}}</p>` in the output with the output of the
 script `files/example-replacement.php`.
 
